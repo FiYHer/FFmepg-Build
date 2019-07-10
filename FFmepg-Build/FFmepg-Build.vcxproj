@@ -73,14 +73,19 @@
     <IncludePath>C:\Users\fyh\Desktop\FFmepg-Build\FFmepg-Build\sdl2_include;C:\Users\fyh\Desktop\FFmepg-Build\FFmepg-Build\ffmpeg_include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\fyh\Desktop\FFmepg-Build\FFmepg-Build\sdl2_lib;C:\Users\fyh\Desktop\FFmepg-Build\FFmepg-Build\ffmpeg_lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\fyh\Desktop\FFmepg-Build\FFmepg-Build\ffmpeg_include;C:\Users\fyh\Desktop\FFmepg-Build\FFmepg-Build\sdl2_include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\fyh\Desktop\FFmepg-Build\FFmepg-Build\sdl2_lib;C:\Users\fyh\Desktop\FFmepg-Build\FFmepg-Build\ffmpeg_lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>
