@@ -1,7 +1,6 @@
 
 #include <stdio.h>
 #define __STDC_CONSTANT_MACROS
-//#pragma warning(disable:4996)
 #ifdef _WIN32
 //Windows
 extern "C"
@@ -65,6 +64,7 @@ int PlayThread(void* pThis)
 		if (!g_ThreadPause)
 		{
 			SDL_Event stEvent;
+			memset(&stEvent, 0, sizeof(SDL_Event));
 			//抛出一个指定的事件 播放
 			stEvent.type = SFM_REFRESH_EVENT;
 			SDL_PushEvent(&stEvent);
@@ -79,6 +79,7 @@ int PlayThread(void* pThis)
 
 	//发送一个结束线程的事件
 	SDL_Event stEvent;
+	memset(&stEvent, 0, sizeof(SDL_Event));
 	stEvent.type = SFM_BREAK_EVENT;
 	SDL_PushEvent(&stEvent);
 
@@ -122,28 +123,28 @@ int main(int agrc, char* zrgv[])
 	//http://ffmpeg.org/doxygen/4.1/structSwsContext.html
 	SwsContext* stSwsContext;
 	//文件
-	char szPath[] = "h://walk.mpg.ts";
+	char szPath[] = "F:\\ffmepg\\test\\video.mp4";
 	//初始化所有
 	av_register_all();
 	//初始化格式
 	avformat_network_init();
-	//
+	//申请一个FormatContext
 	pFormatContext = avformat_alloc_context();
-
+	//打开输入文件
 	if (avformat_open_input(&pFormatContext, szPath, 0, 0) != 0)
 	{
 		puts("open stream file fail");
 		return -1;
 	}
-
+	//获取输入文件的信息
 	if (avformat_find_stream_info(pFormatContext, 0) < 0)
 	{
 		puts("get info fail");
 		return -1;
 	}
 
-	nVideoIndex = -1;
 	//查找视频帧
+	nVideoIndex = -1;
 	for (nIndex = 0; nIndex < pFormatContext->nb_streams; nIndex++)
 	{
 		if (pFormatContext->streams[nIndex]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
@@ -158,10 +159,10 @@ int main(int agrc, char* zrgv[])
 		puts("find vidoe fail");
 		return -1;
 	}
-
+	//获取编码器信息
 	pCodeContext = pFormatContext->streams[nVideoIndex]->codec;
+	//查找编码器
 	pCode = avcodec_find_decoder(pCodeContext->codec_id);
-
 	if (!pCode)
 	{
 		puts("codec not find");
@@ -222,7 +223,7 @@ int main(int agrc, char* zrgv[])
 	stRect.h = nScreenH;
 	stRect.w = nScreenW;
 
-	pPacket = (AVPacket*)malloc(sizeof(AVPacket));
+	pPacket = (AVPacket*)av_malloc(sizeof(AVPacket));
 
 	pThread = SDL_CreateThread(PlayThread,NULL,NULL);
 
@@ -246,8 +247,8 @@ int main(int agrc, char* zrgv[])
 			}
 			if (nGotPicture)
 			{
-				sws_scale(stSwsContext, (const unsigned char* const*)pFrame->data, pFrame->linesize,
-					pCodeContext->height, 0, pFrameYUV->data, pFrameYUV->linesize);
+				sws_scale(stSwsContext, (const unsigned char* const*)pFrame->data, pFrame->linesize,0,
+					pCodeContext->height, pFrameYUV->data, pFrameYUV->linesize);
 				SDL_UpdateTexture(pTexture, 0, pFrameYUV->data[0], pFrameYUV->linesize[0]);
 				SDL_RenderClear(pRenderer);
 				SDL_RenderCopy(pRenderer, pTexture, 0, 0);
